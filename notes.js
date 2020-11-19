@@ -8,7 +8,7 @@ const getNotes = (note) => {
 const addNote = (title, body) => {
     const notes = loadNotes()
 
-    const duplicateNote = notes.find(note => note.title === title ? note :  null)
+    const duplicateNote = notes.find(note => {if (note.title === title) note})
 
     !duplicateNote ? 
     success('New note added!!') &&
@@ -22,7 +22,7 @@ const removeNote = (noteByTitle) => {
     const notes = loadNotes()
     console.log('Notes.length', notes.length)
 
-    const selectedNotes = notes.filter(note => note.title !== noteByTitle ?  note : '')
+    const selectedNotes = notes.filter(note => {if (note.title !== noteByTitle) note})
     console.log('SelectedNotes.length', selectedNotes.length)
     saveNotes(selectedNotes)
     notes.length === selectedNotes.length ? errorMessage('No note found') : success('Note removed!')
@@ -35,7 +35,16 @@ const listNotes = () => {
     notes.forEach(note => console.log(note.title));
 }
 
+const readNote = (title) => {
+    const notes = loadNotes()
+    const selectedNote = notes.find(note => (note.title === title))
+    !selectedNote? errorMessage('No note found!') : styleNote(selectedNote.title, selectedNote.body)
+}
 
+const styleNote = (title, body) => {
+    console.log(chalk.underline.magenta(title))
+    console.log(chalk.cyan(body))
+}
 
 const saveNotes = (notes) => {
     const dataJSON = JSON.stringify(notes)
