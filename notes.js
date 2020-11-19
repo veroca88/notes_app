@@ -8,13 +8,14 @@ const getNotes = (note) => {
 const addNote = (title, body) => {
     const notes = loadNotes()
 
-    const duplicatesNotes = notes.filter(note => note.title === title ? note :  '')
+    const duplicateNote = notes.find(note => note.title === title ? note :  null)
 
-    duplicatesNotes.length === 0 ? 
-        notes.push({
+    !duplicateNote ? 
+    success('New note added!!') &&
+       ( notes.push({
         title: title,
         body: body
-    }) && console.log(chalk.green.inverse('New note added!!')) && saveNotes(notes) : console.log(chalk.red.inverse('Note title taken! try a different one :)'))
+    }) && saveNotes(notes)) : errorMessage('Title taken! try a different one :)')
 }
 
 const removeNote = (noteByTitle) => {
@@ -24,13 +25,22 @@ const removeNote = (noteByTitle) => {
     const selectedNotes = notes.filter(note => note.title !== noteByTitle ?  note : '')
     console.log('SelectedNotes.length', selectedNotes.length)
     saveNotes(selectedNotes)
-    notes.length === selectedNotes.length ? console.log(chalk.red.inverse('No note found')) : console.log(chalk.green.inverse('Note removed!'))
+    notes.length === selectedNotes.length ? errorMessage('No note found') : success('Note removed!')
 
 }
+
+const listNotes = () => {
+    const notes = loadNotes()
+    console.log(chalk.magenta('Your notes are: '))
+    notes.forEach(note => console.log(note.title));
+}
+
+
 
 const saveNotes = (notes) => {
     const dataJSON = JSON.stringify(notes)
     fs.writeFileSync('notes.json', dataJSON)
+    
 }
 
 const loadNotes = () => {
@@ -44,4 +54,12 @@ const loadNotes = () => {
     
 } 
 
-module.exports = {getNotes, addNote, removeNote}
+const errorMessage = (message) => {
+    console.log(chalk.red.inverse('Error Message...', message))
+}
+
+const success = (message) => {
+    console.log(chalk.green.inverse('Success!! ', message))
+}
+
+module.exports = {getNotes, addNote, removeNote, listNotes, readNote}
